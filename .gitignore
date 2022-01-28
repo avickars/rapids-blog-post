@@ -2,4 +2,6 @@
 1980-2008-CO.csv
 bc_air_monitoring_stations.csv
 runing_spark
-test_subsets
+etl_test_subsets
+/ml_test_subsets/
+/ml_data/
