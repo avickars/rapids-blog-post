@@ -4,7 +4,7 @@ NUM_START_ROWS = 2500
 
 NUM_EXECUTIONS_PER_TEST = 3
 
-NUM_DSIZE_DOUBLINGS = 11
+NUM_DSIZE_DOUBLINGS = 12
 
 
 def main():
@@ -36,13 +36,13 @@ def main():
         numRows = numRows * 2
 
         if numRows > co_df.count():
-            co_subset = co_subset.append(co_subset)
+            co_subset = co_subset.union(co_subset)
         else:
             co_subset = co_df.limit(numRows)
 
         co_subset = co_subset.repartition(2)
 
-        co_subset.write.csv(f"etl_test_subsets/test_{i}", compression='gzip')
+        co_subset.write.csv(f"etl_test_subsets/test_{i}", compression='gzip', mode='overwrite')
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ NUM_START_ROWS = 2500
 
 NUM_EXECUTIONS_PER_TEST = 3
 
-NUM_DSIZE_DOUBLINGS = 11
+NUM_DSIZE_DOUBLINGS = 12
 
 
 def main():
@@ -55,105 +55,114 @@ def main():
     station_co_df = functions.broadcast(station_co_df)
 
     for i in range(0, NUM_DSIZE_DOUBLINGS):
-        co_subset = spark.read.csv(f"test_subsets/test_{i}", schema=air_schema)
+        print('Test', i, '***************************************************************************************************************')
+        co_subset = spark.read.csv(f"etl_test_subsets/test_{i}", schema=air_schema)
 
-        for i in range(0, NUM_EXECUTIONS_PER_TEST):
-            # ******************************************************************************
-            # MEAN TEST
+        # ******************************************************************************
+        # MEAN TEST
 
-            test = {'Test': 'Mean'}
+        test = {'Test': 'Mean', 'Test Number': i}
 
-            # Starting timer
-            t0 = time.time()
+        # Starting timer
+        t0 = time.time()
+
+        for j in range(0, NUM_EXECUTIONS_PER_TEST):
 
             # Executing the Mean test
             co_subset.agg({"RAW_VALUE": "mean"}).collect()
 
-            # Stopping clock
-            t1 = time.time()
+        # Stopping clock
+        t1 = time.time()
 
-            # Recording Results
-            total_time = t1 - t0
-            avg_time = total_time / NUM_EXECUTIONS_PER_TEST
-            test['Total'] = total_time
-            test['Average'] = avg_time
+        # Recording Results
+        total_time = t1 - t0
+        avg_time = total_time / NUM_EXECUTIONS_PER_TEST
+        test['Total'] = total_time
+        test['Average'] = avg_time
 
-            spark_results.append(test)
+        spark_results.append(test)
 
-            # ******************************************************************************
-            # SORT TEST
+        # ******************************************************************************
+        # SORT TEST
 
-            test = {'Test': 'Sort'}
+        test = {'Test': 'Sort', 'Test Number': i}
 
-            # Starting timer
-            t0 = time.time()
+        # Starting timer
+        t0 = time.time()
+
+        for j in range(0, NUM_EXECUTIONS_PER_TEST):
 
             # Executing the Sort test
             co_subset.sort("RAW_VALUE", ascending=True).show(5)
 
-            # Stopping clock
-            t1 = time.time()
+        # Stopping clock
+        t1 = time.time()
 
-            # Recording Results
-            total_time = t1 - t0
-            avg_time = total_time / NUM_EXECUTIONS_PER_TEST
-            test['Total'] = total_time
-            test['Average'] = avg_time
+        # Recording Results
+        total_time = t1 - t0
+        avg_time = total_time / NUM_EXECUTIONS_PER_TEST
+        test['Total'] = total_time
+        test['Average'] = avg_time
 
-            spark_results.append(test)
+        spark_results.append(test)
 
-            # ******************************************************************************
-            # MERGE TEST
+        # ******************************************************************************
+        # MERGE TEST
 
-            test = {'Test': 'Merge'}
+        test = {'Test': 'Merge', 'Test Number': i}
 
-            # Starting timer
-            t0 = time.time()
+        # Starting timer
+        t0 = time.time()
+
+        for j in range(0, NUM_EXECUTIONS_PER_TEST):
 
             # Executing the Merge test
             co_subset_merged = co_subset.join(station_co_df, how='left', on='STATION_NAME')
             co_subset_merged.show(5)
 
-            # Stopping clock
-            t1 = time.time()
+        # Stopping clock
+        t1 = time.time()
 
-            # Recording Results
-            total_time = t1 - t0
-            avg_time = total_time / NUM_EXECUTIONS_PER_TEST
-            test['Total'] = total_time
-            test['Average'] = avg_time
+        # Recording Results
+        total_time = t1 - t0
+        avg_time = total_time / NUM_EXECUTIONS_PER_TEST
+        test['Total'] = total_time
+        test['Average'] = avg_time
 
-            spark_results.append(test)
+        spark_results.append(test)
 
-            # ******************************************************************************
-            # FILTER TEST
+        # ******************************************************************************
+        # FILTER TEST
 
-            test = {'Test': 'Filter'}
+        test = {'Test': 'Filter', 'Test Number': i}
 
-            # Starting timer
-            t0 = time.time()
+        # Starting timer
+        t0 = time.time()
 
+        for j in range(0, NUM_EXECUTIONS_PER_TEST):
             # Executing the Filter test
             co_subset[co_subset['STATION_NAME'] == 'Victoria Topaz'].show(5)
 
-            # Stopping clock
-            t1 = time.time()
+        # Stopping clock
+        t1 = time.time()
 
-            # Recording Results
-            total_time = t1 - t0
-            avg_time = total_time / NUM_EXECUTIONS_PER_TEST
-            test['Total'] = total_time
-            test['Average'] = avg_time
+        # Recording Results
+        total_time = t1 - t0
+        avg_time = total_time / NUM_EXECUTIONS_PER_TEST
+        test['Total'] = total_time
+        test['Average'] = avg_time
 
-            spark_results.append(test)
+        spark_results.append(test)
 
-            # ******************************************************************************
-            # ALL TEST
+        # ******************************************************************************
+        # ALL TEST
 
-            test = {'Test': 'All'}
+        test = {'Test': 'All', 'Test Number': i}
 
-            # Starting timer
-            t0 = time.time()
+        # Starting timer
+        t0 = time.time()
+
+        for j in range(0, NUM_EXECUTIONS_PER_TEST):
 
             # Executing the Mean test
             co_subset.agg({"RAW_VALUE": "mean"}).collect()
@@ -168,18 +177,16 @@ def main():
             # Executing the Filter test
             co_subset[co_subset['STATION_NAME'] == 'Victoria Topaz'].show(5)
 
-            # Stopping clock
-            t1 = time.time()
+        # Stopping clock
+        t1 = time.time()
 
-            # Recording Results
-            total_time = t1 - t0
-            avg_time = total_time / NUM_EXECUTIONS_PER_TEST
-            test['Total'] = total_time
-            test['Average'] = avg_time
+        # Recording Results
+        total_time = t1 - t0
+        avg_time = total_time / NUM_EXECUTIONS_PER_TEST
+        test['Total'] = total_time
+        test['Average'] = avg_time
 
-            spark_results.append(test)
-
-        break
+        spark_results.append(test)
 
     # Keeping this as a pandas df to maintain order
     pd.DataFrame(spark_results).to_csv('spark_etl_results.csv')
