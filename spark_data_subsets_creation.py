@@ -27,28 +27,7 @@ def main():
 
     ])
 
-    station_schema = types.StructType([
-        types.StructField('STATION_NAME_FULL', types.StringType()),
-        types.StructField('STATION_NAME', types.StringType()),
-        types.StructField('EMS_ID', types.StringType()),
-        types.StructField('SERIAL', types.IntegerType()),
-        types.StructField('ADDRESS', types.StringType()),
-        types.StructField('CITY', types.StringType()),
-        types.StructField('LAT', types.FloatType()),
-        types.StructField('LONG', types.FloatType()),
-        types.StructField('ELEVATION', types.IntegerType()),
-        types.StructField('STATUS_DESCRIPTION', types.StringType()),
-        types.StructField('OWNER', types.StringType()),
-        types.StructField('REGION', types.StringType()),
-        types.StructField('STATUS', types.StringType()),
-        types.StructField('OPENED', types.TimestampType()),
-        types.StructField('CLOSED', types.StringType()),
-        types.StructField('NAPS_ID', types.IntegerType()),
-
-    ])
-
     co_df = spark.read.csv("1980-2008-CO.csv", header=True, schema=air_schema)
-    station_co_df = spark.read.csv("bc_air_monitoring_stations.csv", header=True, schema=station_schema)
 
     try:
         os.mkdir(f"test_subsets")
