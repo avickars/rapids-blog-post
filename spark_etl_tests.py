@@ -1,7 +1,6 @@
 from pyspark.sql import SparkSession, functions, types
-import os
+import sys
 import time
-import pandas as pd
 
 NUM_START_ROWS = 2500
 
@@ -10,7 +9,7 @@ NUM_EXECUTIONS_PER_TEST = 3
 NUM_DSIZE_DOUBLINGS = 12
 
 
-def main():
+def main(input1, input2, output):
     spark_results = []
 
     air_schema = types.StructType([
@@ -51,12 +50,15 @@ def main():
 
     ])
 
-    station_co_df = spark.read.csv("bc_air_monitoring_stations.csv", header=True, schema=station_schema)
+    station_co_df = spark.read.csv(f"{input1}", header=True, schema=station_schema)
+    # station_co_df = spark.read.csv("bc_air_monitoring_stations.csv", header=True, schema=station_schema)
     station_co_df = functions.broadcast(station_co_df)
 
     for i in range(0, NUM_DSIZE_DOUBLINGS):
         print('Test', i, '***************************************************************************************************************')
-        co_subset = spark.read.csv(f"etl_test_subsets/test_{i}", schema=air_schema)
+        co_subset = spark.read.csv(f"{input2}/test_{i}", schema=air_schema)
+        co_subset = co_subset.repartition(8)
+        # co_subset = spark.read.csv(f"etl_test_subsets/test_{i}", schema=air_schema)
 
         # ******************************************************************************
         # MEAN TEST
@@ -189,12 +191,24 @@ def main():
         spark_results.append(test)
 
     # Keeping this as a pandas df to maintain order
-    pd.DataFrame(spark_results).to_csv('spark_etl_results.csv')
+    # pd.DataFrame(spark_results).to_csv('AWS Results/spark_etl_results.csv')
+    # pd.DataFrame(spark_results).to_csv(f"{output}")
+    schema = types.StructType([
+        types.StructField('Test', types.StringType()),
+        types.StructField('Test Number', types.IntegerType()),
+        types.StructField('Total', types.DoubleType()),
+        types.StructField('Average', types.DoubleType())
+    ])
+    results_rdd = sc.parallelize(spark_results, numSlices=1)
+    spark.createDataFrame(data=results_rdd, schema=schema).write.csv(output, header=True)
 
 
 if __name__ == '__main__':
+    input1 = sys.argv[1]
+    input2 = sys.argv[2]
+    output = sys.argv[3]
     spark = SparkSession.builder.appName('spark etl tests').getOrCreate()
     assert spark.version >= '3.0'  # make sure we have Spark 3.0+
     spark.sparkContext.setLogLevel('WARN')
     sc = spark.sparkContext
-    main()
+    main(input1, input2, output)

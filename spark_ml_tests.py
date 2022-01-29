@@ -2,18 +2,18 @@ from pyspark.sql import SparkSession, functions, types
 from pyspark.ml.regression import LinearRegression
 from pyspark.ml.feature import VectorAssembler
 import time
-import pandas as pd
+import sys
 
 NUM_START_ROWS = 2500
 
 NUM_EXECUTIONS_PER_TEST = 3
 
-NUM_DSIZE_DOUBLINGS = 11
+NUM_DSIZE_DOUBLINGS = 10
 
 NUM_FEATURES = 399 + 1
 
 
-def main():
+def main(input, output):
     schema = types.StructType([
         types.StructField(f"{i}", types.DoubleType()) for i in range(0, NUM_FEATURES)
 
@@ -22,9 +22,13 @@ def main():
     results = []
 
     for i in range(0, NUM_DSIZE_DOUBLINGS):
-        print('Test:', i)
+        print('Test:', i, '***************************************************************************************************************')
+        # X = spark.read.csv(
+        #     f"ml_data/{i}/",
+        #     schema=schema,
+        #     header=True)
         X = spark.read.csv(
-            f"ml_data/{i}/",
+            f"{input}/{i}/",
             schema=schema,
             header=True)
 
@@ -62,15 +66,26 @@ def main():
 
         results.append(test)
 
-        test = {'Test': 'K Nearest Neighbour', 'Test Number': i, 'Total': 0, 'Average': 0}
+        test = {'Test': 'K Nearest Neighbour', 'Test Number': i, 'Total': 0.0, 'Average': 0.0}
         results.append(test)
 
-    pd.DataFrame(results).to_csv('spark_ml_results.csv')
+    # pd.DataFrame(results).to_csv('spark_ml_results.csv')
+    schema = types.StructType([
+        types.StructField('Test', types.StringType()),
+        types.StructField('Test Number', types.IntegerType()),
+        types.StructField('Total', types.DoubleType()),
+        types.StructField('Average', types.DoubleType())
+    ])
+
+    results_rdd = sc.parallelize(results, numSlices=1)
+    spark.createDataFrame(data=results_rdd, schema=schema).write.csv(output, header=True, mode='overwrite')
 
 
 if __name__ == '__main__':
+    input = sys.argv[1]
+    output = sys.argv[2]
     spark = SparkSession.builder.appName('spark ml tests').getOrCreate()
     assert spark.version >= '3.0'  # make sure we have Spark 3.0+
     spark.sparkContext.setLogLevel('WARN')
     sc = spark.sparkContext
-    main()
+    main(input, output)
