@@ -1,0 +1,21 @@
+Test,Test Number,Total,Average
+Linear Regression,0,22.19820284843445,7.399400949478149
+K Nearest Neighbour,0,0.0,0.0
+Linear Regression,1,9.533414125442505,3.177804708480835
+K Nearest Neighbour,1,0.0,0.0
+Linear Regression,2,13.061921119689941,4.3539737065633135
+K Nearest Neighbour,2,0.0,0.0
+Linear Regression,3,21.897825241088867,7.299275080362956
+K Nearest Neighbour,3,0.0,0.0
+Linear Regression,4,40.316718101501465,13.438906033833822
+K Nearest Neighbour,4,0.0,0.0
+Linear Regression,5,78.28600692749023,26.095335642496746
+K Nearest Neighbour,5,0.0,0.0
+Linear Regression,6,148.87252616882324,49.62417538960775
+K Nearest Neighbour,6,0.0,0.0
+Linear Regression,7,299.68303298950195,99.89434432983398
+K Nearest Neighbour,7,0.0,0.0
+Linear Regression,8,639.7516407966614,213.25054693222046
+K Nearest Neighbour,8,0.0,0.0
+Linear Regression,9,1402.733519077301,467.57783969243366
+K Nearest Neighbour,9,0.0,0.0
