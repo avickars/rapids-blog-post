@@ -51,14 +51,11 @@ def main(input1, input2, output):
     ])
 
     station_co_df = spark.read.csv(f"{input1}", header=True, schema=station_schema)
-    # station_co_df = spark.read.csv("bc_air_monitoring_stations.csv", header=True, schema=station_schema)
     station_co_df = functions.broadcast(station_co_df)
 
     for i in range(0, NUM_DSIZE_DOUBLINGS):
         print('Test', i, '***************************************************************************************************************')
         co_subset = spark.read.csv(f"{input2}/test_{i}", schema=air_schema)
-        co_subset = co_subset.repartition(8)
-        # co_subset = spark.read.csv(f"etl_test_subsets/test_{i}", schema=air_schema)
 
         # ******************************************************************************
         # MEAN TEST
@@ -71,7 +68,7 @@ def main(input1, input2, output):
         for j in range(0, NUM_EXECUTIONS_PER_TEST):
 
             # Executing the Mean test
-            co_subset.agg({"RAW_VALUE": "mean"}).collect()
+            co_subset.select(functions.mean("RAW_VALUE")).show()
 
         # Stopping clock
         t1 = time.time()
@@ -143,7 +140,7 @@ def main(input1, input2, output):
 
         for j in range(0, NUM_EXECUTIONS_PER_TEST):
             # Executing the Filter test
-            co_subset[co_subset['STATION_NAME'] == 'Victoria Topaz'].show(5)
+            co_subset.filter(co_subset['STATION_NAME'] == 'Victoria Topaz').show(5)
 
         # Stopping clock
         t1 = time.time()
@@ -167,7 +164,7 @@ def main(input1, input2, output):
         for j in range(0, NUM_EXECUTIONS_PER_TEST):
 
             # Executing the Mean test
-            co_subset.agg({"RAW_VALUE": "mean"}).collect()
+            co_subset.select(functions.mean("RAW_VALUE")).show()
 
             # Executing the Sort test
             co_subset.sort("RAW_VALUE", ascending=True).show(5)
@@ -177,7 +174,7 @@ def main(input1, input2, output):
             co_subset_merged.show(5)
 
             # Executing the Filter test
-            co_subset[co_subset['STATION_NAME'] == 'Victoria Topaz'].show(5)
+            co_subset.filter(co_subset['STATION_NAME'] == 'Victoria Topaz').show(5)
 
         # Stopping clock
         t1 = time.time()

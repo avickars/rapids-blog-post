@@ -23,16 +23,10 @@ def main(input, output):
 
     for i in range(0, NUM_DSIZE_DOUBLINGS):
         print('Test:', i, '***************************************************************************************************************')
-        # X = spark.read.csv(
-        #     f"ml_data/{i}/",
-        #     schema=schema,
-        #     header=True)
         X = spark.read.csv(
-            f"{input}/{i}/",
+            f"{input}/test_{i}/",
             schema=schema,
             header=True)
-
-        X = X.repartition(2)
 
         test = {'Test': 'Linear Regression', 'Test Number': i}
 

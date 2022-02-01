@@ -40,9 +40,9 @@ def main():
         else:
             co_subset = co_df.limit(numRows)
 
-        co_subset = co_subset.repartition(2)
+        co_subset = co_subset.repartition(16)
 
-        co_subset.write.csv(f"etl_test_subsets/test_{i}", compression='gzip', mode='overwrite')
+        co_subset.write.csv(f"spark_etl_test_subsets/test_{i}", compression='gzip', mode='overwrite')
 
 
 if __name__ == '__main__':
