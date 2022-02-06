@@ -2,7 +2,7 @@ from pyspark.sql import SparkSession, types
 
 NUM_FEATURES = 399 + 1
 
-NUM_DSIZE_DOUBLINGS = 10
+NUM_DSIZE_DOUBLINGS = 9
 
 
 def main():
