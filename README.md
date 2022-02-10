@@ -1,6 +1,6 @@
 # Rapids Blog Post Repository
 
-This repo contains the entire code used in our comparisons between Rapids - Scikit Learn - Spark - Pandas that are featured here: https://medium.com/@rishabhkaushal07/rapids-the-future-of-gpu-data-science-9e0524563019
+This repo contains the entire code used in our comparisons between Rapids - Scikit Learn - Spark - Pandas that are featured here: https://medium.com/sfu-cspmp/rapids-the-future-of-gpu-data-science-9e0524563019
 
 # The Code
 
